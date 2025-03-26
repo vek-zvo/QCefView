@@ -41,6 +41,8 @@ private:
   float m_scale = 1.0f;
   int m_width = 800;
   int m_height = 600;
+  int D3D11_MIN_DEPTH=0.0f;
+  int D3D11_MAX_DEPTH=0.0f;
 
   // lock
   std::mutex m_d3dContextLock;

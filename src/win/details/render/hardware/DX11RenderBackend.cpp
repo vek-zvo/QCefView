@@ -359,8 +359,8 @@ DX11RenderBackend::SetupPipeline()
       0.f,             // FLOAT TopLeftY;
       (FLOAT)m_width,  // FLOAT Width;
       (FLOAT)m_height, // FLOAT Height;
-      D3D11_MIN_DEPTH, // FLOAT MinDepth;
-      D3D11_MAX_DEPTH, // FLOAT MaxDepth;
+      (FLOAT)D3D11_MIN_DEPTH, // FLOAT MinDepth;
+      (FLOAT)D3D11_MAX_DEPTH, // FLOAT MaxDepth;
     } //
   };
   m_d3dContext->RSSetViewports(ARRAYSIZE(vpList), vpList);
@@ -677,8 +677,8 @@ DX11RenderBackend::resize(int width, int height, float scale)
         0.f,             // FLOAT TopLeftY;
         (FLOAT)m_width,  // FLOAT Width;
         (FLOAT)m_height, // FLOAT Height;
-        D3D11_MIN_DEPTH, // FLOAT MinDepth;
-        D3D11_MAX_DEPTH, // FLOAT MaxDepth;
+        (FLOAT)D3D11_MIN_DEPTH, // FLOAT MinDepth;
+        (FLOAT)D3D11_MAX_DEPTH, // FLOAT MaxDepth;
       } //
     };
     m_d3dContext->RSSetViewports(ARRAYSIZE(vpList), vpList);

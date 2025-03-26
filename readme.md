@@ -1,5 +1,16 @@
 # QCefView
 
+## 本仓库修改提醒
+本仓库fork源自于https://github.com/CefView/QCefView<br>
+同时感谢作者的付出<br>
+本仓库所有的修改均在所有的修改文本前一行增加了标识#[Edit:JackLee]mingw build<br>
+如果想查看本人对该仓库的修改请直接clone后搜索#[Edit:JackLee]mingw build即可<br>
+1-修复src/win/details/DX11RenderBackend.cpp中下面代码错误问题<br>
+(FLOAT)D3D11_MIN_DEPTH, // FLOAT MinDepth;<br>
+(FLOAT)D3D11_MAX_DEPTH, // FLOAT MaxDepth;<br>
+2-修复QCefSetting.cpp中最后一行#endif]多一个]的问题<br>
+已知BUG<br>
+本仓库编译后,包括原作者的Demo存在无法使用多进程模式,您可以使用--single-process命令启动demo,正在解决中.<br>
 ## Introduction
 
 QCefView is a Qt-based QWidget that encapsulates CEF (Chromium Embedded Framework). With QCefView, you can build your application UI using modern frontend development techniques, boosting project efficiency while keeping UI and business logic decoupled. Most importantly, QCefView enables seamless CEF integration within Qt applications.
