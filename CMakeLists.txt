@@ -16,37 +16,57 @@ set(CMAKE_FOLDER "QCefView")
 # - refer to: cmake\QtConfig.cmake
 #
 
+#[Edit:JackLee]mingw build
 # options
-option(BUILD_DEMO
-  "Build the demo"
-  OFF
-)
-option(BUILD_STATIC
-  "Build QCefView as static library"
-  OFF
-)
-option(STATIC_CRT
-  "Use MultiThreaded linkage for MSVC"
-  OFF
-)
-option(USE_SANDBOX
-  "Enable CEF Sandbox"
-  OFF
-)
-option(USE_WIN_DCOMPOSITION
-  "Enabled Windows direct composition for hardware rendering, _WIN32_WINNT >= 0x602 (Windows 8) is required"
-  OFF
-)
+option(BUILD_DEMO "Build the demo" OFF)
+option(BUILD_LIBCEF_DEMO "Build the libcef demo" OFF)
+option(BUILD_STATIC "Build QCefView as static library" OFF)
+option(STATIC_CRT "Use MultiThreaded linkage for MSVC" OFF)
+option(USE_SANDBOX "Enable CEF Sandbox" OFF)
+option(USE_WIN_DCOMPOSITION "Enabled Windows direct composition for hardware rendering, _WIN32_WINNT >= 0x602 (Windows 8) is required" OFF)
 
 # Only works for Windows & Linux, always enabled on macOS
 # If enable then:
 # CefSettings.multi_threaded_message_loop = false && CefSettings.external_message_pump = true
 # else:
 # CefSettings.multi_threaded_message_loop = true && CefSettings.external_message_pump = false
-option(USE_QT_EVENT_LOOP
-  "Enable the integration of CEF message loop thread into Qt event loop"
-  OFF
-)
+option(USE_QT_EVENT_LOOP "Enable the integration of CEF message loop thread into Qt event loop" OFF)
+
+#[Edit:JackLee]mingw build
+if (MINGW)
+  if (NOT QT_SDK_DIR)
+    set(QT_SDK_DIR "D:/Dev/Qt/6.8.0/mingw1310_static_x64/lib/cmake")
+  endif()
+  # add_definitions(-DBUILD_DEMO=ON)
+  # add_definitions(-DBUILD_LIBCEF_DEMO=OFF)
+  # add_definitions(-DBUILD_STATIC=ON)
+  # add_definitions(-DSTATIC_CRT=OFF)
+  # add_definitions(-DUSE_SANDBOX=OFF)
+  # add_definitions(-DUSE_WIN_DCOMPOSITION=ON)
+  # add_definitions(-DUSE_QT_EVENT_LOOP=ON)
+  # add_definitions(-DCMAKE_BUILD_TYPE=Release)
+  SET(BUILD_DEMO ON)
+  SET(BUILD_LIBCEF_DEMO OFF)
+  SET(BUILD_STATIC ON)
+  SET(STATIC_CRT OFF)
+  SET(USE_SANDBOX OFF)
+  SET(USE_WIN_DCOMPOSITION ON)
+  SET(USE_QT_EVENT_LOOP ON)
+  SET(CMAKE_BUILD_TYPE Release)
+  # 禁用弃用警告
+  add_compile_options(-Wno-deprecated-declarations)
+elseif(MSVC)
+  add_definitions(-D_SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING=1)
+endif()
+
+message(STATUS "BUILD_DEMO:" ${BUILD_DEMO})
+message(STATUS "BUILD_LIBCEF_DEMO:" ${BUILD_LIBCEF_DEMO})
+message(STATUS "BUILD_STATIC:" ${BUILD_STATIC})
+message(STATUS "STATIC_CRT:" ${STATIC_CRT})
+message(STATUS "USE_SANDBOX:" ${USE_SANDBOX})
+message(STATUS "USE_WIN_DCOMPOSITION:" ${USE_WIN_DCOMPOSITION})
+message(STATUS "USE_QT_EVENT_LOOP:" ${USE_QT_EVENT_LOOP})
+message(STATUS "CMAKE_BUILD_TYPE:" ${CMAKE_BUILD_TYPE})
 
 # append cmake config module path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -68,8 +88,6 @@ set(CMAKE_C_STANDARD 11)
 # C++ standard
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
-
-add_definitions(-D_SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING=1)
 
 # Determine the project architecture.
 if(NOT DEFINED PROJECT_ARCH)
@@ -122,28 +140,39 @@ elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
     add_compile_options(-m32)
     add_link_options(-m32)
   endif()
+#[Edit:JackLee]mingw build
 elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-  set(OS_WINDOWS 1)
+  if(MSVC)
+      set(OS_WINDOWS 1)
+      # Disable the sandbox on Windows, because the sandbox.lib is MT which is conflict with Qt
+      set(USE_SANDBOX OFF CACHE BOOL "Disable sandbox on Windows" FORCE)
+      add_definitions(
+        -DOS_WINDOWS=1
+        -D_WIN32_WINNT=0x601
+      )
 
-  # Disable the sandbox on Windows, because the sandbox.lib is MT which is conflict with Qt
-  set(USE_SANDBOX OFF CACHE BOOL "Disable sandbox on Windows" FORCE)
-  add_definitions(
-    -DOS_WINDOWS=1
-    -D_WIN32_WINNT=0x601
-  )
+      if(USE_WIN_DCOMPOSITION)
+      add_definitions(
+          -DENABLE_WINDOWS_DIRECT_COMPOSITION=1
+      )
+    endif()
 
-  if(USE_WIN_DCOMPOSITION)
-    add_definitions(
-      -DENABLE_WINDOWS_DIRECT_COMPOSITION=1
+    add_compile_options(
+      /W3
+      /WX
+      /M$<IF:$<BOOL:${STATIC_CRT}>,T,D>$<$<CONFIG:Debug>:d>
     )
+    add_link_options(/DEBUG)
+  elseif(MINGW)
+    set(OS_WINDOWS 1)
+    add_definitions(
+      -DOS_WINDOWS=1
+      -D_WIN32_WINNT=0x0A00
+    )
+    if(USE_WIN_DCOMPOSITION)
+      add_definitions(-DENABLE_WINDOWS_DIRECT_COMPOSITION=1)
+    endif()
   endif()
-
-  add_compile_options(
-    /W3
-    /WX
-    /M$<IF:$<BOOL:${STATIC_CRT}>,T,D>$<$<CONFIG:Debug>:d>
-  )
-  add_link_options(/DEBUG)
 endif()
 
 if(BUILD_STATIC)

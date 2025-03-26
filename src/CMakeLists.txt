@@ -42,6 +42,10 @@ endif()
 if(USE_QT_EVENT_LOOP)
   add_definitions(-DCEF_USE_QT_EVENT_LOOP)
 endif()
+#[Edit:JackLee]mingw build
+if(USE_WIN_DCOMPOSITION)
+  add_definitions(-DENABLE_WINDOWS_DIRECT_COMPOSITION=1)
+endif()
 
 if(OS_WINDOWS)
   file(GLOB_RECURSE QCefView_Windows_SRC_FILES
@@ -66,15 +70,15 @@ if(OS_WINDOWS)
     _UNICODE
     QCEFVIEW_LIB
   )
-
+  #[Edit:JackLee]mingw build
   if(BUILD_STATIC)
     target_link_options(QCefView 
-      PUBLIC
-      "/DELAYLOAD:libcef.dll"
+      PRIVATE
+      "/DELAYLOAD:libcef.lib"
     )
 
     target_link_libraries(QCefView
-      PUBLIC
+      PRIVATE
       d3d11
       d3dcompiler
       dcomp
@@ -94,20 +98,22 @@ if(OS_WINDOWS)
       delayimp
     )
   endif()
+  #[Edit:JackLee]mingw build
+  if(MSVC)
+    add_custom_command(TARGET QCefView
+        PRE_BUILD
 
-  add_custom_command(TARGET QCefView
-    PRE_BUILD
+        # copy binary files of CefViewCore
+        COMMAND ${CMAKE_COMMAND}
+        -E copy_directory
+        "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
+        "$<TARGET_FILE_DIR:QCefView>/CefView"
 
-    # copy binary files of CefViewCore
-    COMMAND ${CMAKE_COMMAND}
-    -E copy_directory
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
-    "$<TARGET_FILE_DIR:QCefView>/CefView"
-
-    # gnerate a file contains timestamp
-    COMMAND ${CMAKE_COMMAND}
-    -E echo "/* Auto Build Trigger */" > "${CMAKE_BINARY_DIR}/auto_rebuild.cpp"
-  )
+        # gnerate a file contains timestamp
+        COMMAND ${CMAKE_COMMAND}
+        -E echo "/* Auto Build Trigger */" > "${CMAKE_BINARY_DIR}/auto_rebuild.cpp"
+    )
+  endif()
 endif() # OS_WINDOWS
 
 if(OS_LINUX)
