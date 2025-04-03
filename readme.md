@@ -11,8 +11,7 @@ QCefView is a Qt-based QWidget that encapsulates CEF (Chromium Embedded Framewor
 | macOS-x86_64 | [![Build on macOS](https://github.com/CefView/QCefView/actions/workflows/build-macos-x86_64.yml/badge.svg)](https://github.com/CefView/QCefView/actions/workflows/build-macos-x86_64.yml)          | :heavy_check_mark: | :heavy_check_mark: |
 | Linux-x86_64 | [![Build on Linux](https://github.com/CefView/QCefView/actions/workflows/build-linux-x86_64.yml/badge.svg)](https://github.com/CefView/QCefView/actions/workflows/build-linux-x86_64.yml)         | :heavy_check_mark: | :x: |
 
-# Build For MINGW
-[MINGW](https://raw.githubusercontent.com/CefView/QCefView/refs/heads/main/readme_build_mingw.md)
+
 + **OSR** = Offscreen Rendering Mode  
 + **NCW** = Native Child Window Mode  
 
@@ -43,6 +42,7 @@ Find the latest documentation here:
 
 - 📖 [English Documentation](https://cefview.github.io/QCefView/)
 - 📖 [中文文档](https://cefview.github.io/QCefView/zh/)
+- 📖 [Build For MINGW](https://raw.githubusercontent.com/CefView/QCefView/refs/heads/main/readme_build_mingw.md)
 
 These resources will help you quickly understand and integrate QCefView into your projects.
 
