@@ -19,12 +19,14 @@ main(int argc, char* argv[])
   QApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 #endif
 #endif
-
+  //#[Edit:JackLee]mingw build
+  QString currentExePath=QDir::currentPath();
   // create QApplication instance
   QApplication a(argc, argv);
 
   // build QCefConfig
   QCefConfig config;
+  config.setBrowserSubProcessPath(currentExePath+"/QCefViewTest.exe");
   // set user agent
   config.setUserAgent("QCefViewTest");
   // set log level

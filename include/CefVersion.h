@@ -13,12 +13,12 @@
 #pragma once
 
 // clang-format off
-#define CEF_VERSION "126.2.18+g3647d39+chromium-126.0.6478.183"
-#define CEF_VERSION_MAJOR 126
-#define CEF_VERSION_MINOR 2
-#define CEF_VERSION_PATCH 18
-#define CEF_COMMIT_NUMBER 3019
-#define CEF_COMMIT_HASH "3647d39e700c215bd78172c5964eb1c550950f0f"
+#define CEF_VERSION "134.3.9+g5dc6f2f+chromium-134.0.6998.178"
+#define CEF_VERSION_MAJOR 134
+#define CEF_VERSION_MINOR 3
+#define CEF_VERSION_PATCH 9
+#define CEF_COMMIT_NUMBER 3158
+#define CEF_COMMIT_HASH "5dc6f2f29c7466f6e9ab9773e36de4b28e59c1f3"
 // clang-format on
 
 #endif // CefVersion

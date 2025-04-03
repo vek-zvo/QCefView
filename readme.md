@@ -42,7 +42,7 @@ Find the latest documentation here:
 
 - 📖 [English Documentation](https://cefview.github.io/QCefView/)
 - 📖 [中文文档](https://cefview.github.io/QCefView/zh/)
-- 📖 [Build For MINGW](https://raw.githubusercontent.com/CefView/QCefView/refs/heads/main/readme_build_mingw.md)
+- 📖 [Build For MINGW](https://raw.githubusercontent.com/vek-zvo/QCefView/refs/heads/main/readme_build_mingw.md)
 
 These resources will help you quickly understand and integrate QCefView into your projects.
 

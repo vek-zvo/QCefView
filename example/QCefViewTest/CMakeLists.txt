@@ -96,33 +96,35 @@ if(OS_WINDOWS)
     PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
   )
+#[Edit:JackLee]mingw build
+  if("${BUILD_COMPILER}" STREQUAL MSVC)
+    add_custom_command(TARGET ${PROJECT_NAME}
+      POST_BUILD
 
-  add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
+      # Embed the manifest file into the target
+      COMMAND mt.exe
+      -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\${PROJECT_NAME}.manifest\"
+      -inputresource:\"$<TARGET_FILE:${PROJECT_NAME}>\"
+      -outputresource:\"$<TARGET_FILE:${PROJECT_NAME}>\"
 
-    # Embed the manifest file into the target
-    COMMAND mt.exe
-    -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\${PROJECT_NAME}.manifest\"
-    -inputresource:\"$<TARGET_FILE:${PROJECT_NAME}>\"
-    -outputresource:\"$<TARGET_FILE:${PROJECT_NAME}>\"
+      # Copy QCefView binary to output folder
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+      $<TARGET_FILE_DIR:QCefView>
+      $<TARGET_FILE_DIR:${PROJECT_NAME}>
 
-    # Copy QCefView binary to output folder
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    $<TARGET_FILE_DIR:QCefView>
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>
+      # Copy the webres directory to output folder
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+      ${CMAKE_CURRENT_BINARY_DIR}/webres
+      $<TARGET_FILE_DIR:${PROJECT_NAME}>/webres
 
-    # Copy the webres directory to output folder
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_BINARY_DIR}/webres
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>/webres
-
-    # Deploy the Qt Application
-    COMMAND ${DEPLOYQT_EXECUTABLE}
-    --no-svg
-    --no-translations
-    --no-compiler-runtime
-    $<TARGET_FILE:${PROJECT_NAME}>
-  )
+      # Deploy the Qt Application
+      COMMAND ${DEPLOYQT_EXECUTABLE}
+      --no-svg
+      --no-translations
+      --no-compiler-runtime
+      $<TARGET_FILE:${PROJECT_NAME}>
+    )
+  endif()
 endif() # OS_WINDOWS
 
 if(OS_LINUX)

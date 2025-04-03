@@ -16,47 +16,111 @@ set(CMAKE_FOLDER "QCefView")
 # - refer to: cmake\QtConfig.cmake
 #
 
+#[Edit:JackLee]mingw build
 # options
-option(BUILD_DEMO
-  "Build the demo"
-  OFF
-)
-option(BUILD_STATIC
-  "Build QCefView as static library"
-  OFF
-)
-option(STATIC_CRT
-  "Use MultiThreaded linkage for MSVC"
-  OFF
-)
-option(USE_SANDBOX
-  "Enable CEF Sandbox"
-  OFF
-)
-option(USE_WIN_DCOMPOSITION
-  "Enabled Windows direct composition for hardware rendering, _WIN32_WINNT >= 0x602 (Windows 8) is required"
-  OFF
-)
-
+if(NOT DEFINED BUILD_ARGS_INPUT_MODE)
+  SET(BUILD_ARGS_INPUT_MODE OFF CACHE BOOL "Build Args Input Mode")
+endif()
+if(NOT DEFINED BUILD_QCefView_DEMO)
+  SET(BUILD_QCefView_DEMO OFF CACHE BOOL "Build the demo")
+endif()
+if(NOT DEFINED BUILD_LIBCEF_CEFSIMPL_DEMO)
+  SET(BUILD_LIBCEF_CEFSIMPL_DEMO OFF CACHE BOOL "Build the libcef in test to cefsimpl demo")
+endif()
+if(NOT DEFINED BUILD_LIBCEF_CEFCLIENT_DEMO)
+  SET(BUILD_LIBCEF_CEFCLIENT_DEMO OFF CACHE BOOL "Build the libcef in test to cefclient demo")
+endif()
+if(NOT DEFINED BUILD_STATIC)
+  SET(BUILD_STATIC OFF CACHE BOOL "Build QCefView as static library")
+endif()
+if(NOT DEFINED STATIC_CRT)
+  SET(STATIC_CRT OFF CACHE BOOL "Use MultiThreaded linkage for MSVC")
+endif()
+if(NOT DEFINED USE_SANDBOX)
+  SET(USE_SANDBOX OFF CACHE BOOL "Enable CEF Sandbox")
+endif()
+if(NOT DEFINED USE_WIN_DCOMPOSITION)
+  SET(USE_WIN_DCOMPOSITION OFF CACHE BOOL "Enabled Windows direct composition for hardware rendering, _WIN32_WINNT >= 0x602 (Windows 8) is required")
+endif()
+if(NOT DEFINED BUILD_COMPILER)
+  SET(BUILD_COMPILER "MSVC" CACHE STRING "compiler")
+endif()
+#9.编译版本
+if(NOT DEFINED CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE "Debug" CACHE STRING "build type")
+endif()
 # Only works for Windows & Linux, always enabled on macOS
 # If enable then:
 # CefSettings.multi_threaded_message_loop = false && CefSettings.external_message_pump = true
 # else:
 # CefSettings.multi_threaded_message_loop = true && CefSettings.external_message_pump = false
-option(USE_QT_EVENT_LOOP
-  "Enable the integration of CEF message loop thread into Qt event loop"
-  OFF
-)
+if(NOT DEFINED USE_QT_EVENT_LOOP)
+  SET(USE_QT_EVENT_LOOP OFF CACHE BOOL "Enable the integration of CEF message loop thread into Qt event loop")
+endif()
+#11.support ATL
+if(NOT DEFINED USE_ATL)
+  SET(USE_ATL OFF CACHE BOOL "MSVC support ATL")
+endif()
+#12.support Mingw
+if(NOT DEFINED BUILD_FIX_MINGW)
+  SET(BUILD_FIX_MINGW ON CACHE BOOL "support Mingw")
+endif()
+
+
+#[Edit:JackLee]mingw build
+if(BUILD_ARGS_INPUT_MODE)
+   if(NOT DEFINED QT_SDK_DIR)
+       MESSAGE(FATAL_ERROR "QT_SDK_DIR Not Set, use -DQT_SDK_DIR=/path/to/qt/cmake")
+   endif()
+else()#cmakelists set build args
+   SET(QT_SDK_DIR "D:/Dev/Qt/6.8.0/mingw1310_static_x64/lib/cmake")
+   if (!BUILD_FIX_MINGW)
+      SET(BUILD_FIX_MINGW ON)
+   endif()
+   SET(BUILD_QCefView_DEMO ON)
+   SET(BUILD_LIBCEF_CEFSIMPL_DEMO ON)
+   SET(BUILD_LIBCEF_CEFCLIENT_DEMO ON)
+   SET(BUILD_STATIC ON)
+   SET(STATIC_CRT OFF)
+   SET(USE_SANDBOX OFF)
+   SET(USE_ATL OFF)
+   SET(USE_WIN_DCOMPOSITION ON)
+   SET(USE_QT_EVENT_LOOP ON)
+   SET(CMAKE_BUILD_TYPE "Release")
+   SET(BUILD_COMPILER "MINGW")
+endif()
+message(STATUS "----------build option state-------------")
+message(STATUS "BUILD_ARGS_INPUT_MODE:" ${BUILD_ARGS_INPUT_MODE})
+message(STATUS "QT_SDK_DIR:" ${QT_SDK_DIR})
+message(STATUS "BUILD_FIX_MINGW:" ${BUILD_FIX_MINGW})
+message(STATUS "BUILD_QCefView_DEMO:" ${BUILD_QCefView_DEMO})
+message(STATUS "BUILD_LIBCEF_CEFSIMPL_DEMO:" ${BUILD_LIBCEF_CEFSIMPL_DEMO})
+message(STATUS "BUILD_LIBCEF_CEFCLIENT_DEMO:" ${BUILD_LIBCEF_CEFCLIENT_DEMO})
+message(STATUS "BUILD_STATIC:" ${BUILD_STATIC})
+message(STATUS "STATIC_CRT:" ${STATIC_CRT})
+message(STATUS "USE_SANDBOX:" ${USE_SANDBOX})
+message(STATUS "USE_WIN_DCOMPOSITION:" ${USE_WIN_DCOMPOSITION})
+message(STATUS "USE_QT_EVENT_LOOP:" ${USE_QT_EVENT_LOOP})
+message(STATUS "CMAKE_BUILD_TYPE:" ${CMAKE_BUILD_TYPE})
+message(STATUS "BUILD_COMPILER:" ${BUILD_COMPILER})
+message(STATUS "-----------------------------------------")
+# 禁用弃用警告
+if ("${BUILD_COMPILER}" STREQUAL MSVC AND OS_WINDOWS) 
+  add_definitions(-D_SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING=1)
+else()
+  add_compile_options(-Wno-deprecated-declarations)
+endif()
 
 # append cmake config module path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+#[Edit:JackLee]mingw build
 # Only generate Debug and Release configuration types.
-set(CMAKE_CONFIGURATION_TYPES Debug Release)
+# set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Debug")
-endif()
+# if(NOT CMAKE_BUILD_TYPE)
+#   set(CMAKE_BUILD_TYPE "Debug")
+# endif()
 
 # Use folders in the resulting project files.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -122,28 +186,40 @@ elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
     add_compile_options(-m32)
     add_link_options(-m32)
   endif()
+#[Edit:JackLee]mingw build
 elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-  set(OS_WINDOWS 1)
-
-  # Disable the sandbox on Windows, because the sandbox.lib is MT which is conflict with Qt
-  set(USE_SANDBOX OFF CACHE BOOL "Disable sandbox on Windows" FORCE)
-  add_definitions(
-    -DOS_WINDOWS=1
-    -D_WIN32_WINNT=0x601
-  )
-
-  if(USE_WIN_DCOMPOSITION)
-    add_definitions(
-      -DENABLE_WINDOWS_DIRECT_COMPOSITION=1
+  if("${BUILD_COMPILER}" STREQUAL MSVC)
+      set(OS_WINDOWS 1)
+      # Disable the sandbox on Windows, because the sandbox.lib is MT which is conflict with Qt
+      set(USE_SANDBOX OFF CACHE BOOL "Disable sandbox on Windows" FORCE)
+      add_definitions(
+        -DOS_WINDOWS=1
+        -D_WIN32_WINNT=0x601
+      )
+      if(USE_WIN_DCOMPOSITION)
+         add_definitions(
+           -DENABLE_WINDOWS_DIRECT_COMPOSITION=ON
+         )
+      endif()
+    add_compile_options(
+      /W3
+      /WX
+      /M$<IF:$<BOOL:${STATIC_CRT}>,T,D>$<$<CONFIG:Debug>:d>
     )
+    add_link_options(/DEBUG)
+  else()
+    add_definitions(
+      -DOS_WINDOWS=1
+      -D_WIN32_WINNT=0x0A00
+    )
+    SET(OS_WINDOWS 1)
+    SET(_WIN32_WINNT 0x0A00)
+    if(USE_WIN_DCOMPOSITION)
+      add_definitions(
+        -DENABLE_WINDOWS_DIRECT_COMPOSITION=ON
+      )
+    endif()
   endif()
-
-  add_compile_options(
-    /W3
-    /WX
-    /M$<IF:$<BOOL:${STATIC_CRT}>,T,D>$<$<CONFIG:Debug>:d>
-  )
-  add_link_options(/DEBUG)
 endif()
 
 if(BUILD_STATIC)
@@ -213,7 +289,7 @@ add_subdirectory(src)
 
 # Config the Demo project
 # ##############################################################
-if(BUILD_DEMO)
+if(BUILD_QCefView_DEMO)
   add_subdirectory(example/QCefViewTest)
 endif()
 

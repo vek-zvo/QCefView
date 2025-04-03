@@ -439,4 +439,5 @@ QCefSetting::hardwareAcceleration() const
   Q_D(const QCefSetting);
   return d->hardwareAcceleration_;
 }
-#endif]
+//#[Edit:JackLee]mingw build
+#endif

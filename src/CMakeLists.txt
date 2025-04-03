@@ -66,48 +66,78 @@ if(OS_WINDOWS)
     _UNICODE
     QCEFVIEW_LIB
   )
+#[Edit:JackLee]mingw build
+  if("${BUILD_COMPILER}" STREQUAL MSVC)
+    if(BUILD_STATIC)
+      target_link_options(QCefView 
+        PUBLIC
+        "/DELAYLOAD:libcef.lib"
+      )
+      target_link_libraries(QCefView
+        PUBLIC
+        d3d11
+        d3dcompiler
+        dcomp
+        delayimp
+      )
+    else()
+      target_link_options(QCefView 
+        PRIVATE
+        "/DELAYLOAD:libcef.dll"
+      )
 
-  if(BUILD_STATIC)
-    target_link_options(QCefView 
-      PUBLIC
-      "/DELAYLOAD:libcef.dll"
-    )
-
-    target_link_libraries(QCefView
-      PUBLIC
-      d3d11
-      d3dcompiler
-      dcomp
-      delayimp
-    )
+      target_link_libraries(QCefView
+        PRIVATE
+        d3d11
+        d3dcompiler
+        dcomp
+        delayimp
+      )
+    endif()
   else()
-    target_link_options(QCefView 
-      PRIVATE
-      "/DELAYLOAD:libcef.dll"
-    )
-
-    target_link_libraries(QCefView
-      PRIVATE
-      d3d11
-      d3dcompiler
-      dcomp
-      delayimp
-    )
+    if(BUILD_STATIC)
+      target_link_options(QCefView 
+        PRIVATE
+        "/DELAYLOAD:libcef.lib"
+      )
+      target_link_libraries(QCefView
+        PRIVATE
+        d3d11
+        d3dcompiler
+        dcomp
+        delayimp
+      )
+    else()
+      target_link_options(QCefView 
+        PUBLIC
+        "/DELAYLOAD:libcef.dll"
+      )
+      target_link_libraries(QCefView
+        PUBLIC
+        d3d11
+        d3dcompiler
+        dcomp
+        delayimp
+      )
+    endif()
   endif()
 
-  add_custom_command(TARGET QCefView
-    PRE_BUILD
+#[Edit:JackLee]mingw build
+  if("${BUILD_COMPILER}" STREQUAL MSVC)
+    add_custom_command(TARGET QCefView
+        PRE_BUILD
 
-    # copy binary files of CefViewCore
-    COMMAND ${CMAKE_COMMAND}
-    -E copy_directory
-    "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
-    "$<TARGET_FILE_DIR:QCefView>/CefView"
+        # copy binary files of CefViewCore
+        COMMAND ${CMAKE_COMMAND}
+        -E copy_directory
+        "$<TARGET_FILE_DIR:${CEFVIEW_WING_NAME}>"
+        "$<TARGET_FILE_DIR:QCefView>/CefView"
 
-    # gnerate a file contains timestamp
-    COMMAND ${CMAKE_COMMAND}
-    -E echo "/* Auto Build Trigger */" > "${CMAKE_BINARY_DIR}/auto_rebuild.cpp"
-  )
+        # gnerate a file contains timestamp
+        COMMAND ${CMAKE_COMMAND}
+        -E echo "/* Auto Build Trigger */" > "${CMAKE_BINARY_DIR}/auto_rebuild.cpp"
+    )
+  endif()
 endif() # OS_WINDOWS
 
 if(OS_LINUX)

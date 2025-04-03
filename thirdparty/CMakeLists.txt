@@ -47,9 +47,9 @@ FetchContent_Declare(
 # set(CEF_SDK_VERSION "123.0.13+gfc703fb+chromium-123.0.6312.124")  # NOT TEST
 # set(CEF_SDK_VERSION "124.3.9+g9bd638f+chromium-124.0.6367.207")   # NOT TEST
 # set(CEF_SDK_VERSION "125.0.22+gc410c95+chromium-125.0.6422.142")  # NOT TEST
-set(CEF_SDK_VERSION "126.2.18+g3647d39+chromium-126.0.6478.183") # NOT TEST
+set(CEF_SDK_VERSION "134.3.9+g5dc6f2f+chromium-134.0.6998.178") # NOT TEST
 
-# set(CEF_SDK_VERSION "127.3.5+g114ea2a+chromium-127.0.6533.120") # GOOD
+# set(CEF_SDK_VERSION "134.3.9+g5dc6f2f+chromium-134.0.6998.178") # GOOD
 
 # set(CEF_SDK_VERSION "128.4.9+g9840ad9+chromium-128.0.6613.120")   # BAD   # debugbreak - debug mode
 
@@ -64,3 +64,46 @@ configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/../include/CefVersion.h"
     COPYONLY
 )
+
+#Fix Mingw Build
+if(OS_WINDOWS)
+  set(CEF_SDK_PLATFORM "windows")
+elseif(OS_LINUX)
+  set(CEF_SDK_PLATFORM "linux")
+elseif(OS_MACOS)
+  set(CEF_SDK_PLATFORM "macos")
+else()
+  message(FATAL_ERROR "Unsupported Operating System")
+endif()
+
+if(PROJECT_ARCH STREQUAL "x86_64")
+  set(CEF_SDK_ARCH "64")
+elseif(PROJECT_ARCH STREQUAL "x86")
+  set(CEF_SDK_ARCH "32")
+elseif(PROJECT_ARCH STREQUAL "arm64")
+  set(CEF_SDK_ARCH "arm64")
+elseif(PROJECT_ARCH STREQUAL "arm")
+  set(CEF_SDK_ARCH "arm")
+else()
+  message(FATAL_ERROR "Unsupported Processor Architecture")
+endif()
+
+
+if(OS_MACOS AND PROJECT_ARCH STREQUAL "x86_64")
+  # macosx64
+  set(CEF_SDK_PACKAGE_NAME "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}x${CEF_SDK_ARCH}")
+else()
+  set(CEF_SDK_PACKAGE_NAME "cef_binary_${CEF_SDK_VERSION}_${CEF_SDK_PLATFORM}${CEF_SDK_ARCH}")
+endif()
+
+# 指定额外的 CMake 模块搜索路径
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/fix_mingw_patch/cmake")
+
+if("${BUILD_FIX_MINGW}" STREQUAL "")
+   SET(BUILD_FIX_MINGW ON CACHE STRING "Fix Done" FORCE)
+endif()
+
+if(BUILD_FIX_MINGW)
+   include(SetupMingw)
+   SET(BUILD_FIX_MINGW OFF CACHE STRING "Fix Done" FORCE)
+endif()
