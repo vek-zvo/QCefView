@@ -26,7 +26,7 @@ main(int argc, char* argv[])
 
   // build QCefConfig
   QCefConfig config;
-  config.setBrowserSubProcessPath(currentExePath+"QCefViewTest.exe");
+  config.setBrowserSubProcessPath(currentExePath+"/QCefViewTest.exe");
   // set user agent
   config.setUserAgent("QCefViewTest");
   // set log level
