@@ -97,7 +97,7 @@ else()
 endif()
 
 # 指定额外的 CMake 模块搜索路径
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/fix_patch/cmake")
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/fix_mingw_patch/cmake")
 
 if("${BUILD_FIX_MINGW}" STREQUAL "")
    SET(BUILD_FIX_MINGW ON CACHE STRING "Fix Done" FORCE)
