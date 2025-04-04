@@ -53,6 +53,7 @@ RunMain(HINSTANCE hInstance, int nCmdShow)
   CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
   command_line->InitFromString(::GetCommandLineW());
   command_line->AppendSwitchWithValue("url", "https://www.baidu.com");
+  command_line->AppendSwitchWithValue("renderer-process-limit", "1");
   // Create a ClientApp of the correct type.
   CefRefPtr<CefApp> app;
   ClientApp::ProcessType process_type = ClientApp::GetProcessType(command_line);

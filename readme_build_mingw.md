@@ -22,3 +22,4 @@ vscode配置:用vscode打开QCefView项目目录,并打开CMakeLists.txt文件�
 <p>部署libcef的版本号修改在fix_mingw_patch/thirdparty/CMakeLists.txt中.</p>
 <p>本项目由于作者水平有限,方法很野,再加上libcef的二进制库是动态配置的,所以只能想到这个骚操作了.请谅解。</p>
 <p>为什么不提交给原作者:还是那句话水平有限,修改后其他平台编译是否有影响不得而知.没脸去提交PR</p>
+<P>切换libcef二进制库版本后,需要手动删除build目录下CMakeCache.txt文件重新配置
