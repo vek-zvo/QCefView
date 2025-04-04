@@ -35,7 +35,9 @@
 namespace client {
 namespace {
 
-int RunMain(HINSTANCE hInstance, int nCmdShow) {
+int
+RunMain(HINSTANCE hInstance, int nCmdShow)
+{
   CefMainArgs main_args(hInstance);
 
   void* sandbox_info = nullptr;
@@ -50,9 +52,7 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   // Parse command-line arguments.
   CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
   command_line->InitFromString(::GetCommandLineW());
-  command_line->AppendSwitchWithValue("lang","zh-CN");
-  command_line->AppendSwitchWithValue("url","https://www.baidu.com");
-
+  command_line->AppendSwitchWithValue("url", "https://www.baidu.com");
   // Create a ClientApp of the correct type.
   CefRefPtr<CefApp> app;
   ClientApp::ProcessType process_type = ClientApp::GetProcessType(command_line);
@@ -74,7 +74,7 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   auto context = std::make_unique<MainContextImpl>(command_line, true);
 
   CefSettings settings;
-
+  CefString(&settings.locale).FromString("zh-CN");
 #if !defined(CEF_USE_SANDBOX)
   settings.no_sandbox = true;
 #endif
@@ -85,8 +85,8 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   // executable and used when creating default Chrome windows such as DevTools
   // and Task Manager. Only used with the Chrome runtime.
   settings.chrome_app_icon_id = IDR_MAINFRAME;
-  settings.multi_threaded_message_loop=true;
-  settings.external_message_pump=false;
+  settings.multi_threaded_message_loop = true;
+  settings.external_message_pump = false;
   // Create the main message loop object.
   std::unique_ptr<MainMessageLoop> message_loop;
   if (settings.multi_threaded_message_loop) {
@@ -96,7 +96,7 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   } else {
     message_loop = std::make_unique<MainMessageLoopStd>();
   }
-
+  
   // Initialize the CEF browser process. May return false if initialization
   // fails or if early exit is desired (for example, due to process singleton
   // relaunch behavior).
@@ -108,13 +108,18 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   test_runner::RegisterSchemeHandlers();
 
   auto window_config = std::make_unique<RootWindowConfig>();
-  window_config->always_on_top =
-      command_line->HasSwitch(switches::kAlwaysOnTop);
-  window_config->with_osr =
-      settings.windowless_rendering_enabled ? true : false;
+  window_config->always_on_top = command_line->HasSwitch(switches::kAlwaysOnTop);
+  window_config->with_osr = settings.windowless_rendering_enabled ? true : false;
   // Create the first window.
-  context->GetRootWindowManager()->CreateRootWindow(std::move(window_config));
-
+  // context->GetRootWindowManager()->CreateRootWindow(std::move(window_config));
+  //open a browser window style chromium 
+  CefWindowInfo window_info;
+  window_info.SetAsPopup(nullptr, "cefclient");
+  window_info.shared_texture_enabled = true;
+  CefRefPtr<CefClient> client;
+  CefBrowserSettings browser_settings;
+  std::string url = "baidu.com";
+  CefBrowserHost::CreateBrowser(window_info, client, url, browser_settings, nullptr, nullptr);
   // Run the message loop. This will block until Quit() is called by the
   // RootWindowManager after all windows have been destroyed.
   int result = message_loop->Run();
@@ -129,15 +134,14 @@ int RunMain(HINSTANCE hInstance, int nCmdShow) {
   return result;
 }
 
-}  // namespace
-}  // namespace client
+} // namespace
+} // namespace client
 
 #if MSVC
 // Program entry point function.
-int APIENTRY wWinMain(HINSTANCE hInstance,
-                      HINSTANCE hPrevInstance,
-                      LPTSTR lpCmdLine,
-                      int nCmdShow) {
+int APIENTRY
+wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+{
   UNREFERENCED_PARAMETER(hPrevInstance);
   UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -149,8 +153,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   // flag on executable targets. This saves significant memory on threads (like
   // those in the Windows thread pool, and others) whose stack size can only be
   // controlled via the linker flag.
-  int exit_code = CefRunWinMainWithPreferredStackSize(wWinMain, hInstance,
-                                                      lpCmdLine, nCmdShow);
+  int exit_code = CefRunWinMainWithPreferredStackSize(wWinMain, hInstance, lpCmdLine, nCmdShow);
   if (exit_code >= 0) {
     // The fiber has completed so return here.
     return exit_code;
@@ -160,8 +163,10 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   return client::RunMain(hInstance, nCmdShow);
 }
 #else
-int main(int argc, char *argv[]){
+int
+main(int argc, char* argv[])
+{
   HINSTANCE hInstance = GetModuleHandle(NULL);
-  return client::RunMain(hInstance,argc);
+  return client::RunMain(hInstance, argc);
 }
 #endif
