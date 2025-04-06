@@ -32,34 +32,53 @@ main(int argc, char* argv[])
   // set log level
   config.setLogLevel(QCefConfig::LOGSEVERITY_DEFAULT);
   // set JSBridge object name (default value is CefViewClient)
+  config.setRootCachePath(currentExePath + "/user");
+  config.setCachePath(currentExePath + "/user");
   config.setBridgeObjectName("CallBridge");
-  // set Built-in scheme name (default value is CefView)
   config.setBuiltinSchemeName("CefView");
-  // port for remote debugging (default is 0 and means to disable remote debugging)
-  config.setRemoteDebuggingPort(9000);
-  // set background color for all browsers
-  // (QCefSetting.setBackgroundColor will overwrite this value for specified browser instance)
-  // config.setBackgroundColor(Qt::lightGray);
+  // 浏览器标识
+  config.setUserAgent("Mozilla/5.0 (Windows NT 10.0; CEF/3.2272.2035) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 SoftwareInformer/1.6.1400");
+  // 日志输出级别
+  config.setLogLevel(QCefConfig::LOGSEVERITY_VERBOSE);
+  // 无窗口渲染模式
+  config.setWindowlessRenderingEnabled(false);
+  // 远程Debug端口
+  // config.setRemoteDebuggingPort(9000);
+  // 请求头的语言
+  config.setAcceptLanguageList("zh-CN");
+  // 允许忽略 localhost 上的 TLS/SSL 错误
+  config.addCommandLineSwitch("ignore-certificate-errors-spki-list");
+  config.addCommandLineSwitch("ignore-ssl-errors");
+  // 单进程模式
+  // config.addCommandLineSwitch("single-process");
+  // 启用GPU加速
+  config.addCommandLineSwitch("enable-gpu");
+  // GPU加速合成
+  //config.addCommandLineSwitch("enable-gpu-compositing");
+  // 在进程中使用GPU渲染-开启后只有一个进程
+  //config.addCommandLineSwitch("in-process-gpu");
+  // 无头模式
+  // config.addCommandLineSwitch("headless");
+  // chrome运行时环境
+  config.addCommandLineSwitch("enable-chrome-runtime");
+  config.addCommandLineSwitch("use-native");
+  // 离屏渲染
+  config.addCommandLineSwitch("off-screen-rendering-enabled");
+  // 网络服务In进程
+  //config.addCommandLineSwitchWithValue("enable-features", "NetworkServiceInProcess");
+  // 语言
+  config.addCommandLineSwitchWithValue("lang", "zh-CN");
+  // 跨域进行远程
+  // config.addCommandLineSwitchWithValue("remote-allow-origins", "*");
 
-  // WindowlessRenderingEnabled is set to true by default,
-  // set to false to disable the OSR mode
-  config.setWindowlessRenderingEnabled(true);
-
-  // add command line args, you can any cef supported switches or parameters
-  config.addCommandLineSwitch("use-mock-keychain");
-  // config.addCommandLineSwitch("disable-gpu");
-  // config.addCommandLineSwitch("enable-media-stream");
-  // config.addCommandLineSwitch("allow-file-access-from-files");
-  // config.addCommandLineSwitch("disable-spell-checking");
-  // config.addCommandLineSwitch("disable-site-isolation-trials");
-  // config.addCommandLineSwitch("enable-aggressive-domstorage-flushing");
+  //  禁用沙盒
+  config.addCommandLineSwitchWithValue("no-sandbox", "ture");
+  // 渲染进程限制
   config.addCommandLineSwitchWithValue("renderer-process-limit", "1");
-  // allow remote debugging
-  config.addCommandLineSwitchWithValue("remote-allow-origins", "*");
-  // config.addCommandLineSwitchWithValue("disable-features", "BlinkGenPropertyTrees,TranslateUI,site-per-process");
-
-  // set cache folder
-  config.setCachePath(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation));
+  // 外部消息循环
+  config.addCommandLineSwitchWithValue("external-message-pump", "false");
+  // 多线程消息循环
+  config.addCommandLineSwitchWithValue("multi-threaded-message-loop", "false");
 
   // create QCefContext instance with config,
   // the lifecycle of cefContext must be the same as QApplication instance

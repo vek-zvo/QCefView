@@ -819,7 +819,7 @@ elseif (OS_WINDOWS AND MINGW)
     libcef.dll
     libEGL.dll
     libGLESv2.dll
-#   snapshot_blob.bin
+    snapshot_blob.bin
     v8_context_snapshot.bin
     vk_swiftshader.dll
     vk_swiftshader_icd.json
