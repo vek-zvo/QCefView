@@ -1,3 +1,1 @@
-* text=auto eol=lf
-*.{cmd,[cC][mM][dD]} text eol=crlf
-*.{bat,[bB][aA][tT]} text eol=crlf
+cef_binary/cef_binary_133.0.0+g2197e2d+chromium-133.0.6886.0_windows64.tar.bz2 filter=lfs diff=lfs merge=lfs -text
