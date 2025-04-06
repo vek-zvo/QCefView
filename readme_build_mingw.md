@@ -23,3 +23,10 @@ vscode配置:用vscode打开QCefView项目目录,并打开CMakeLists.txt文件�
 <p>本项目由于作者水平有限,方法很野,再加上libcef的二进制库是动态配置的,所以只能想到这个骚操作了.请谅解。</p>
 <p>为什么不提交给原作者:还是那句话水平有限,修改后其他平台编译是否有影响不得而知.没脸去提交PR</p>
 <P>切换libcef二进制库版本后,需要手动删除build目录下CMakeCache.txt文件重新配置
+
+2024-4-6 <br />
+1-固定cef_binray版本号为set(CEF_SDK_VERSION "133.0.0+g2197e2d+chromium-133.0.6886.0") # GOOD Support MP3 MP4 AAC Play<br />
+2-其他cef二进制库版本请自行修改,大致存在不同在demo的文件中,也就是tests/cefclient/CMakelists.txt中<br />
+3-固定cef_binray版本目的不想过快更新版本导致兼容性问题<133版本存在js脚本执行溢出BUG,所以固定版本为133+<br />
+4-本次提供cef_binray二进制库,放在cef_binary中,请自行配合fix_mingw_pacth中thirdparty或者thirdparty中的CMakeLists.txt版本修改使用<br />
+

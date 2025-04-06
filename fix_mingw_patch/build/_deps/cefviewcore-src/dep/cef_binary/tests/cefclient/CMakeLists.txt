@@ -30,8 +30,6 @@ set(CEFCLIENT_BROWSER_BROWSER_SRCS
   browser/client_prefs.cc
   browser/client_prefs.h
   browser/client_types.h
-  browser/config_test.cc
-  browser/config_test.h
   browser/default_client_handler.cc
   browser/default_client_handler.h
   browser/dialog_test.cc
@@ -341,7 +339,6 @@ source_group(cefclient\\\\mac\\\\English.lproj FILES ${CEFCLIENT_RESOURCES_MAC_E
 set(CEFCLIENT_RESOURCES_RESOURCES_SRCS
   resources/binary_transfer.html
   resources/binding.html
-  resources/config.html
   resources/dialogs.html
   resources/draggable.html
   resources/hang.html
